@@ -2,7 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Problem } from '../../domain/Problem';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 interface ProblemPanelProps {
   problem: Problem;
@@ -18,15 +20,18 @@ export function ProblemPanel({ problem }: ProblemPanelProps) {
             href="/"
             className="inline-flex items-center gap-2 text-xs font-semibold text-foreground transition hover:opacity-80"
           >
-            <img src="/logo.png" alt="Takshaka" className="h-5 w-auto object-contain" />
+            <Image src="/logo.png" alt="Takshaka" width={20} height={20} className="h-5 w-auto object-contain" />
             <span className="font-bold tracking-tight">Takshaka</span>
           </Link>
-          <Link
-            href="/"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            ← Dashboard
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle className="h-7 w-7" />
+            <Link
+              href="/"
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              ← Dashboard
+            </Link>
+          </div>
         </div>
         <h1 className="mt-2 text-xl font-bold tracking-tight text-foreground">
           {problem.title}

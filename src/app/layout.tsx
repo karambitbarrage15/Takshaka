@@ -28,7 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} min-h-full flex flex-col font-sans antialiased bg-background text-foreground`}>
         {children}
       </body>

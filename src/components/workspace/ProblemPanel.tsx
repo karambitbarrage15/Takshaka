@@ -13,12 +13,21 @@ export function ProblemPanel({ problem }: ProblemPanelProps) {
     <aside className="flex h-full flex-col overflow-y-auto border-r border-border bg-card p-6 text-card-foreground">
       {/* Navigation & Header */}
       <div className="mb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-        >
-          ← Back to Dashboard
-        </Link>
+        <div className="mb-3 flex items-center justify-between">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-foreground transition hover:opacity-80"
+          >
+            <img src="/logo.png" alt="Takshaka" className="h-5 w-auto object-contain" />
+            <span className="font-bold tracking-tight">Takshaka</span>
+          </Link>
+          <Link
+            href="/"
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            ← Dashboard
+          </Link>
+        </div>
         <h1 className="mt-2 text-xl font-bold tracking-tight text-foreground">
           {problem.title}
         </h1>

@@ -7,10 +7,8 @@ export default function HomePage() {
       {/* Top Header */}
       <header className="border-b border-border bg-card px-8 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground shadow-sm">
-              T
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Takshaka Logo" className="h-7 w-auto object-contain" />
             <span className="text-base font-bold tracking-tight text-foreground">Takshaka</span>
           </div>
           <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground border border-border">

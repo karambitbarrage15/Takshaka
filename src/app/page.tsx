@@ -11,9 +11,6 @@ export default function HomePage() {
             <img src="/logo.png" alt="Takshaka Logo" className="h-7 w-auto object-contain" />
             <span className="text-base font-bold tracking-tight text-foreground">Takshaka</span>
           </div>
-          <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground border border-border">
-            Interactive Practice Platform
-          </span>
         </div>
       </header>
 

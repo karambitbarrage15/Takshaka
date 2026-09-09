@@ -9,9 +9,9 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white shadow-sm">
-              L
+              T
             </div>
-            <span className="text-base font-bold tracking-tight">LLD Practice Platform</span>
+            <span className="text-base font-bold tracking-tight">Takshaka</span>
           </div>
           <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
             Interactive Practice Platform

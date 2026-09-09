@@ -25,3 +25,10 @@ export class DuplicateEvaluationError extends DomainError {
     this.name = 'DuplicateEvaluationError';
   }
 }
+
+export class AttemptNotFoundError extends DomainError {
+  constructor(attemptId: string) {
+    super(`Attempt with id ${attemptId} not found`);
+    this.name = 'AttemptNotFoundError';
+  }
+}

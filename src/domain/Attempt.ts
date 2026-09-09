@@ -14,6 +14,7 @@ export class Attempt {
   private _submission: Submission;
   private _feedback: Feedback | null;
   private _error: string | null;
+  public readonly createdAt: Date;
 
   constructor(
     public readonly id: string,
@@ -21,12 +22,14 @@ export class Attempt {
     submission: Submission,
     status: AttemptStatus = AttemptStatus.DRAFT,
     feedback: Feedback | null = null,
-    error: string | null = null
+    error: string | null = null,
+    createdAt: Date = new Date()
   ) {
     this._status = status;
     this._submission = submission;
     this._feedback = feedback;
     this._error = error;
+    this.createdAt = createdAt;
   }
 
   get status(): AttemptStatus {
@@ -93,7 +96,10 @@ export class Attempt {
       newAttemptId,
       this.problemId,
       clonedSubmission,
-      AttemptStatus.DRAFT
+      AttemptStatus.DRAFT,
+      null,
+      null,
+      new Date()
     );
   }
 }

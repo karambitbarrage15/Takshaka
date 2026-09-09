@@ -2,6 +2,7 @@ export enum NodeType {
   CLASS = 'CLASS',
   ABSTRACT_CLASS = 'ABSTRACT_CLASS',
   INTERFACE = 'INTERFACE',
+  ENUM = 'ENUM',
 }
 
 export interface ClassNodeData {

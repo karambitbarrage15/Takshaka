@@ -9,8 +9,13 @@ export interface CanvasToolbarProps {
   onSubmit: () => void;
   saveStatus: 'saved' | 'saving' | 'unsaved';
   attemptStatus: AttemptStatus;
+  attemptNumber: number;
   isLocked: boolean;
   nodeCount: number;
+  historyCount: number;
+  hasFeedback: boolean;
+  onOpenScorecard: () => void;
+  onOpenHistory: () => void;
 }
 
 export function CanvasToolbar({
@@ -19,8 +24,13 @@ export function CanvasToolbar({
   onSubmit,
   saveStatus,
   attemptStatus,
+  attemptNumber,
   isLocked,
   nodeCount,
+  historyCount,
+  hasFeedback,
+  onOpenScorecard,
+  onOpenHistory,
 }: CanvasToolbarProps) {
   const [isDark, setIsDark] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -46,10 +56,16 @@ export function CanvasToolbar({
     }
   };
 
+  const isCompleted = attemptStatus === AttemptStatus.COMPLETED;
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 py-2.5 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/90">
-      {/* Left controls: Add Class & Node count */}
-      <div className="flex items-center gap-2">
+      {/* Left controls: Attempt badge, Add Class, Node count */}
+      <div className="flex items-center gap-2.5">
+        <span className="rounded-md bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+          Attempt #{attemptNumber}
+        </span>
+
         <button
           type="button"
           onClick={onAddClass}
@@ -64,7 +80,7 @@ export function CanvasToolbar({
         </span>
       </div>
 
-      {/* Right controls: Save status, Save Draft, Submit, Attempt status, Theme toggle */}
+      {/* Right controls */}
       <div className="flex items-center gap-3">
         {/* Save Status Indicator */}
         <div className="flex items-center gap-1.5 text-xs font-medium">
@@ -88,25 +104,40 @@ export function CanvasToolbar({
           )}
         </div>
 
-        {/* Save Draft Button */}
-        <button
-          type="button"
-          onClick={onSaveDraft}
-          disabled={isLocked || saveStatus === 'saving'}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-        >
-          Save Draft
-        </button>
+        {/* Save Draft Button (disabled if completed/locked) */}
+        {!isCompleted && (
+          <button
+            type="button"
+            onClick={onSaveDraft}
+            disabled={isLocked || saveStatus === 'saving'}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          >
+            Save Draft
+          </button>
+        )}
 
-        {/* Submit Button */}
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={isLocked || nodeCount === 0}
-          className="flex items-center gap-1.5 rounded-md bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Submit Architecture
-        </button>
+        {/* View Scorecard Button (Prominent when completed) */}
+        {isCompleted && hasFeedback && (
+          <button
+            type="button"
+            onClick={onOpenScorecard}
+            className="flex items-center gap-1.5 rounded-md bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500"
+          >
+            <span>★</span> View Scorecard
+          </button>
+        )}
+
+        {/* Submit Architecture Button (hidden if already completed) */}
+        {!isCompleted && (
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isLocked || nodeCount === 0}
+            className="flex items-center gap-1.5 rounded-md bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Submit Architecture
+          </button>
+        )}
 
         {/* Attempt Status Badge */}
         <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
@@ -125,7 +156,18 @@ export function CanvasToolbar({
           </span>
         </div>
 
-        {/* Dark / Light Mode Toggle Button */}
+        {/* History Drawer Button */}
+        <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
+          <button
+            type="button"
+            onClick={onOpenHistory}
+            className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          >
+            <span>📜</span> History ({historyCount})
+          </button>
+        </div>
+
+        {/* Theme Toggle */}
         <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
           <button
             type="button"
@@ -134,7 +176,6 @@ export function CanvasToolbar({
             className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-300 bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
           >
             {isDark ? (
-              // Sun icon for dark mode
               <svg
                 className="h-4 w-4 text-amber-400"
                 fill="none"
@@ -149,7 +190,6 @@ export function CanvasToolbar({
                 />
               </svg>
             ) : (
-              // Moon icon for light mode
               <svg
                 className="h-4 w-4 text-zinc-600 dark:text-zinc-400"
                 fill="none"

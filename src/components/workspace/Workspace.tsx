@@ -6,6 +6,8 @@ import { AttemptStatus } from '../../domain/Attempt';
 import { ProblemPanel } from './ProblemPanel';
 import { CanvasToolbar } from '../canvas/CanvasToolbar';
 import { ReactFlowCanvas } from '../canvas/ReactFlowCanvas';
+import { ScorecardModal } from '../feedback/ScorecardModal';
+import { HistoryDrawer } from '../history/HistoryDrawer';
 import { usePracticeSession } from '../../hooks/usePracticeSession';
 
 interface WorkspaceProps {
@@ -15,11 +17,20 @@ interface WorkspaceProps {
 export function Workspace({ problem }: WorkspaceProps) {
   const {
     attempt,
+    history,
+    attemptNumber,
     nodes,
     edges,
     isLoading,
     isLocked,
     saveStatus,
+    isScorecardOpen,
+    isHistoryOpen,
+    setIsScorecardOpen,
+    setIsHistoryOpen,
+    selectAttempt,
+    startBlankAttempt,
+    handleRetry,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -43,12 +54,12 @@ export function Workspace({ problem }: WorkspaceProps) {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      {/* Left Pane: Problem Requirements & Rubric (35% width, min 360px, max 480px) */}
+      {/* Left Pane: Problem Requirements & Rubric (380px) */}
       <div className="w-[380px] shrink-0 border-r border-zinc-200 dark:border-zinc-800">
         <ProblemPanel problem={problem} />
       </div>
 
-      {/* Right Pane: React Flow Canvas Workspace (flex-1) */}
+      {/* Right Pane: React Flow Canvas Workspace */}
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Canvas Toolbar */}
         <CanvasToolbar
@@ -57,8 +68,13 @@ export function Workspace({ problem }: WorkspaceProps) {
           onSubmit={submitArchitecture}
           saveStatus={saveStatus}
           attemptStatus={attempt?.status || AttemptStatus.DRAFT}
+          attemptNumber={attemptNumber}
           isLocked={isLocked}
           nodeCount={nodes.length}
+          historyCount={history.length}
+          hasFeedback={!!attempt?.feedback}
+          onOpenScorecard={() => setIsScorecardOpen(true)}
+          onOpenHistory={() => setIsHistoryOpen(true)}
         />
 
         {/* Canvas Area */}
@@ -73,6 +89,26 @@ export function Workspace({ problem }: WorkspaceProps) {
           />
         </div>
       </main>
+
+      {/* Scorecard Modal */}
+      <ScorecardModal
+        isOpen={isScorecardOpen}
+        onClose={() => setIsScorecardOpen(false)}
+        onRetry={handleRetry}
+        feedback={attempt?.feedback || null}
+        attemptNumber={attemptNumber}
+        problemTitle={problem.title}
+      />
+
+      {/* History Drawer */}
+      <HistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        attempts={history}
+        activeAttemptId={attempt?.id || null}
+        onSelectAttempt={selectAttempt}
+        onStartBlankAttempt={startBlankAttempt}
+      />
     </div>
   );
 }

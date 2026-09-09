@@ -34,23 +34,13 @@ export default function HomePage() {
         {/* Problem Cards */}
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
           {PROBLEMS.map((problem) => {
-            const isMedium = problem.id === 'parking-lot';
             return (
               <div
                 key={problem.id}
                 className="flex flex-col justify-between rounded-xl border border-border bg-card p-6 shadow-sm transition hover:border-primary/50 hover:shadow-md"
               >
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${
-                        isMedium
-                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
-                          : 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
-                      }`}
-                    >
-                      {isMedium ? 'Medium' : 'Hard'}
-                    </span>
+                  <div className="flex items-center justify-end">
                     <span className="text-xs text-muted-foreground font-mono">#{problem.id}</span>
                   </div>
 

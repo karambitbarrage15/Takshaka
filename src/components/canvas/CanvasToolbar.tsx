@@ -35,9 +35,7 @@ export function CanvasToolbar({
   const [isDark, setIsDark] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem('theme');
-    return stored
-      ? stored === 'dark'
-      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return stored === 'dark';
   });
 
   useEffect(() => {
@@ -59,10 +57,10 @@ export function CanvasToolbar({
   const isCompleted = attemptStatus === AttemptStatus.COMPLETED;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 py-2.5 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/90">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/90 px-4 py-2.5 backdrop-blur-sm text-card-foreground">
       {/* Left controls: Attempt badge, Add Class, Node count */}
       <div className="flex items-center gap-2.5">
-        <span className="rounded-md bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+        <span className="rounded-md bg-muted px-2 py-1 text-xs font-bold text-foreground border border-border">
           Attempt #{attemptNumber}
         </span>
 
@@ -70,12 +68,12 @@ export function CanvasToolbar({
           type="button"
           onClick={onAddClass}
           disabled={isLocked}
-          className="flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span>+</span> Add Class
         </button>
 
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="text-xs text-muted-foreground">
           {nodeCount} {nodeCount === 1 ? 'class' : 'classes'}
         </span>
       </div>
@@ -87,13 +85,13 @@ export function CanvasToolbar({
           {saveStatus === 'saving' && (
             <>
               <span className="inline-block h-2 w-2 animate-ping rounded-full bg-amber-400" />
-              <span className="text-zinc-500 dark:text-zinc-400">Saving...</span>
+              <span className="text-muted-foreground">Saving...</span>
             </>
           )}
           {saveStatus === 'saved' && (
             <>
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="text-zinc-500 dark:text-zinc-400">Draft saved</span>
+              <span className="text-muted-foreground">Draft saved</span>
             </>
           )}
           {saveStatus === 'unsaved' && (
@@ -110,7 +108,7 @@ export function CanvasToolbar({
             type="button"
             onClick={onSaveDraft}
             disabled={isLocked || saveStatus === 'saving'}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+            className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             Save Draft
           </button>
@@ -133,18 +131,18 @@ export function CanvasToolbar({
             type="button"
             onClick={onSubmit}
             disabled={isLocked || nodeCount === 0}
-            className="flex items-center gap-1.5 rounded-md bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Submit Architecture
           </button>
         )}
 
         {/* Attempt Status Badge */}
-        <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
+        <div className="border-l border-border pl-3">
           <span
             className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide ${
               attemptStatus === AttemptStatus.DRAFT
-                ? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+                ? 'bg-muted text-foreground border border-border'
                 : attemptStatus === AttemptStatus.EVALUATING
                 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 animate-pulse'
                 : attemptStatus === AttemptStatus.COMPLETED
@@ -157,23 +155,23 @@ export function CanvasToolbar({
         </div>
 
         {/* History Drawer Button */}
-        <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
+        <div className="border-l border-border pl-3">
           <button
             type="button"
             onClick={onOpenHistory}
-            className="flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+            className="flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-muted"
           >
             <span>📜</span> History ({historyCount})
           </button>
         </div>
 
         {/* Theme Toggle */}
-        <div className="border-l border-zinc-200 pl-3 dark:border-zinc-800">
+        <div className="border-l border-border pl-3">
           <button
             type="button"
             onClick={toggleTheme}
             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-300 bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-foreground shadow-sm transition hover:bg-muted"
           >
             {isDark ? (
               <svg
@@ -191,7 +189,7 @@ export function CanvasToolbar({
               </svg>
             ) : (
               <svg
-                className="h-4 w-4 text-zinc-600 dark:text-zinc-400"
+                className="h-4 w-4 text-muted-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

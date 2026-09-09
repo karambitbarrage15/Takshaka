@@ -38,7 +38,7 @@ export function ReactFlowCanvas({
   );
 
   return (
-    <div className="relative h-full w-full bg-zinc-50 dark:bg-zinc-950">
+    <div className="relative h-full w-full bg-background text-foreground">
       <ReactFlow<ClassFlowNode, ClassFlowEdge>
         nodes={nodes}
         edges={edges}
@@ -59,12 +59,12 @@ export function ReactFlowCanvas({
       {/* Empty State Watermark */}
       {nodes.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <div className="rounded-xl border border-dashed border-zinc-300 bg-white/70 p-8 shadow-sm backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/70">
-            <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+          <div className="rounded-xl border border-dashed border-border bg-card/80 p-8 shadow-sm backdrop-blur-sm">
+            <h4 className="text-sm font-semibold text-foreground">
               Blank Architectural Canvas
             </h4>
-            <p className="mt-1 max-w-xs text-xs text-zinc-500 dark:text-zinc-400">
-              Click <span className="font-semibold text-blue-600 dark:text-blue-400">+ Add Class</span> on
+            <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+              Click <span className="font-semibold text-primary">+ Add Class</span> on
               the toolbar above to add your first domain class.
             </p>
           </div>

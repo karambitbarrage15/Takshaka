@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} min-h-full flex flex-col font-sans antialiased`}>
+      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} min-h-full flex flex-col font-sans antialiased bg-background text-foreground`}>
         {children}
       </body>
     </html>

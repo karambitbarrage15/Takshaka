@@ -37,38 +37,38 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
   );
 
   return (
-    <div className="w-64 rounded-lg border-2 border-zinc-300 bg-white shadow-md transition-shadow hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="w-64 rounded-lg border-2 border-border bg-card shadow-md transition-shadow hover:shadow-lg text-card-foreground">
       {/* 4 Connection Handles */}
       <Handle
         type="target"
         position={Position.Top}
         id="top"
-        className="!h-3 !w-3 !bg-blue-500 hover:!bg-blue-600"
+        className="!h-3 !w-3 !bg-primary hover:!bg-primary/80"
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
-        className="!h-3 !w-3 !bg-blue-500 hover:!bg-blue-600"
+        className="!h-3 !w-3 !bg-primary hover:!bg-primary/80"
       />
       <Handle
         type="target"
         position={Position.Left}
         id="left"
-        className="!h-3 !w-3 !bg-blue-500 hover:!bg-blue-600"
+        className="!h-3 !w-3 !bg-primary hover:!bg-primary/80"
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
-        className="!h-3 !w-3 !bg-blue-500 hover:!bg-blue-600"
+        className="!h-3 !w-3 !bg-primary hover:!bg-primary/80"
       />
 
       {/* Header with Type and Class Name */}
-      <div className="border-b border-zinc-200 bg-zinc-100 p-2.5 dark:border-zinc-800 dark:bg-zinc-800/80">
+      <div className="border-b border-border bg-muted/60 p-2.5">
         <div className="flex items-center justify-between gap-1 pb-1">
           {isReadOnly ? (
-            <span className="rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-foreground border border-border">
               {data.type || NodeType.CLASS}
             </span>
           ) : (
@@ -76,7 +76,7 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
               value={data.type || NodeType.CLASS}
               onChange={handleTypeChange}
               disabled={isReadOnly}
-              className="nodrag rounded border border-zinc-300 bg-white px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              className="nodrag rounded border border-border bg-card px-1.5 py-0.5 text-[10px] font-medium text-foreground"
             >
               <option value={NodeType.CLASS}>class</option>
               <option value={NodeType.ABSTRACT_CLASS}>abstract class</option>
@@ -84,7 +84,7 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
               <option value={NodeType.ENUM}>enum</option>
             </select>
           )}
-          <span className="text-[10px] font-mono text-zinc-400">#{id.slice(-4)}</span>
+          <span className="text-[10px] font-mono text-muted-foreground">#{id.slice(-4)}</span>
         </div>
 
         <input
@@ -93,13 +93,13 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
           onChange={handleNameChange}
           placeholder="ClassName"
           disabled={isReadOnly}
-          className="nodrag w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-bold text-zinc-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:text-zinc-50 dark:focus:bg-zinc-950"
+          className="nodrag w-full rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-bold text-foreground focus:border-primary focus:bg-card focus:outline-none"
         />
       </div>
 
       {/* Properties Section */}
-      <div className="border-b border-zinc-200 p-2 dark:border-zinc-800">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+      <div className="border-b border-border p-2">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Properties
         </div>
         <textarea
@@ -108,13 +108,13 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
           onChange={handlePropertiesChange}
           placeholder="- id: string&#10;- status: Status"
           disabled={isReadOnly}
-          className="nodrag mt-1 w-full resize-y rounded border border-transparent bg-transparent px-1 py-0.5 font-mono text-xs text-zinc-800 placeholder-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none dark:text-zinc-200 dark:focus:bg-zinc-950"
+          className="nodrag mt-1 w-full resize-y rounded border border-transparent bg-transparent px-1 py-0.5 font-mono text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:bg-card focus:outline-none"
         />
       </div>
 
       {/* Methods Section */}
       <div className="p-2">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Methods
         </div>
         <textarea
@@ -123,7 +123,7 @@ function ClassNodeComponent({ id, data }: NodeProps<ClassFlowNode>) {
           onChange={handleMethodsChange}
           placeholder="+ execute(): void&#10;+ getId(): string"
           disabled={isReadOnly}
-          className="nodrag mt-1 w-full resize-y rounded border border-transparent bg-transparent px-1 py-0.5 font-mono text-xs text-zinc-800 placeholder-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none dark:text-zinc-200 dark:focus:bg-zinc-950"
+          className="nodrag mt-1 w-full resize-y rounded border border-transparent bg-transparent px-1 py-0.5 font-mono text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:bg-card focus:outline-none"
         />
       </div>
     </div>

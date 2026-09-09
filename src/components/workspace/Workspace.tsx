@@ -41,10 +41,10 @@ export function Workspace({ problem }: WorkspaceProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+      <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-          <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-xs font-medium text-muted-foreground">
             Loading practice session...
           </p>
         </div>
@@ -53,9 +53,9 @@ export function Workspace({ problem }: WorkspaceProps) {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
       {/* Left Pane: Problem Requirements & Rubric (380px) */}
-      <div className="w-[380px] shrink-0 border-r border-zinc-200 dark:border-zinc-800">
+      <div className="w-[380px] shrink-0 border-r border-border bg-card">
         <ProblemPanel problem={problem} />
       </div>
 

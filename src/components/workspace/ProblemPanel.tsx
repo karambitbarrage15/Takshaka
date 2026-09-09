@@ -10,42 +10,42 @@ interface ProblemPanelProps {
 
 export function ProblemPanel({ problem }: ProblemPanelProps) {
   return (
-    <aside className="flex h-full flex-col overflow-y-auto border-r border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <aside className="flex h-full flex-col overflow-y-auto border-r border-border bg-card p-6 text-card-foreground">
       {/* Navigation & Header */}
       <div className="mb-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
+          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
         >
           ← Back to Dashboard
         </Link>
-        <h1 className="mt-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="mt-2 text-xl font-bold tracking-tight text-foreground">
           {problem.title}
         </h1>
       </div>
 
       {/* Description */}
       <div className="mb-6">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Problem Overview
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+        <p className="mt-2 text-sm leading-relaxed text-foreground">
           {problem.description}
         </p>
       </div>
 
       {/* Requirements */}
       <div className="mb-6">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Functional Requirements
         </h2>
         <ul className="mt-2 space-y-2">
           {problem.requirements.map((req, idx) => (
             <li
               key={idx}
-              className="flex items-start gap-2 text-xs leading-relaxed text-zinc-700 dark:text-zinc-300"
+              className="flex items-start gap-2 text-xs leading-relaxed text-foreground"
             >
-              <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+              <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
               <span>{req}</span>
             </li>
           ))}
@@ -53,20 +53,20 @@ export function ProblemPanel({ problem }: ProblemPanelProps) {
       </div>
 
       {/* Evaluation Rubric */}
-      <div className="mt-auto border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <div className="mt-auto border-t border-border pt-6">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Evaluation Rubric Criteria
         </h2>
         <div className="mt-3 space-y-2.5">
           {problem.rubric.map((criterion) => (
             <div
               key={criterion.id}
-              className="rounded-md border border-zinc-200 bg-zinc-50 p-2.5 dark:border-zinc-800 dark:bg-zinc-800/60"
+              className="rounded-md border border-border bg-muted/40 p-2.5"
             >
-              <div className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200">
+              <div className="text-[11px] font-semibold text-foreground">
                 {criterion.id.replace('req-', '').replace(/-/g, ' ').toUpperCase()}
               </div>
-              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {criterion.description}
               </p>
             </div>

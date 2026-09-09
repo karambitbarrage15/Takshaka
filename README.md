@@ -288,12 +288,46 @@ npm run lint
 npm run build
 ```
 
-### Test Coverage Summary
-- **Domain Invariants**: Attempt state transitions, immutability of completed attempts, invalid submissions.
-- **Repository Operations**: Save, retrieve, list, corrupt data recovery, quota handling.
-- **Application Services**: PracticeSessionService orchestration, draft debouncing, retry cloning.
-- **React Flow Mapper**: Bidirectional conversion between React Flow graphs and domain submissions.
-- **API & Evaluator**: Route handling, payload validation, rubric adherence, AI response parsing.
+### Test Coverage Summary (83 Automated Tests across 8 Suites)
+- **Domain Invariants (`src/tests/domain/Attempt.test.ts` — 19 tests)**:
+  - Attempt creation defaults to `DRAFT`.
+  - State machine transitions (`DRAFT` $\rightarrow$ `EVALUATING` $\rightarrow$ `COMPLETED` / `FAILED`).
+  - Guards against invalid direct transitions (`DRAFT` $\rightarrow$ `COMPLETED`, `FAILED` $\rightarrow$ `COMPLETED`).
+  - Duplicate evaluation protection (`EVALUATING` $\rightarrow$ `EVALUATING`).
+  - Immutable completed attempts (cannot re-evaluate, fail, or update submission).
+  - Deep clone isolation on retry (mutating new draft does not corrupt original completed attempt).
+- **Repository Operations (`src/tests/infrastructure/LocalStorageAttemptRepository.test.ts` — 10 tests)**:
+  - Authentic domain rehydration with behaviors and dates preserved.
+  - Safe handling of missing, corrupt, or non-JSON storage strings.
+  - Rehydration sanitization dropping corrupted records with invalid enum types (`NodeType`).
+  - Browser storage full (`QuotaExceededError` on `setItem`) swallowed gracefully.
+  - Chronological sort order preservation (`createdAt` ascending).
+  - Server-Side Rendering (SSR) safety (`window === undefined` no-op).
+- **Application Services (`src/tests/application/PracticeSessionService.test.ts` — 15 tests)**:
+  - Full practice loop orchestration (`startAttempt`, `saveDraft`, `submitAttempt`, `completeAttempt`, `failAttempt`, `retryAttempt`).
+  - Resubmission of failed attempts resetting error states.
+  - Multi-attempt problem isolation and draft modification persistence.
+  - Guarding against nonexistent attempt IDs (`AttemptNotFoundError`).
+- **Canvas Mapper (`src/tests/components/canvas/mapper.test.ts` — 6 tests)**:
+  - Bidirectional serialization between React Flow graph nodes/edges and domain `Submission`.
+  - Graceful handling of empty, null, or undefined submission content.
+  - Safe defaulting for missing node properties (`name`, `type`, `properties`, `methods`).
+- **AI Evaluator (`src/tests/infrastructure/AIEvaluator.test.ts` — 11 tests)**:
+  - Rubric criteria, problem description, and requirements injected into prompt.
+  - Structured output parsing, markdown fence stripping, and JSON schema validation.
+  - Rejection of out-of-bounds scores ($<0$ or $>100$) and missing required fields.
+  - Confidence string defaulting to `"HIGH"` for resilient parsing.
+  - Text-based submission format support.
+- **API Route Handler (`src/tests/infrastructure/EvaluateRoute.test.ts` — 9 tests)**:
+  - Route validation: rejects missing problem ID, missing submission, or unsupported format (HTTP 400).
+  - Empty canvas protection (rejects 0 nodes with HTTP 400).
+  - Unknown problem handling (HTTP 404).
+  - Unparseable request stream handling (HTTP 500).
+  - Successful evaluation end-to-end for both `parking-lot` and `elevator-system` problems.
+- **UI Components (`ScorecardModal.test.ts` — 7 tests, `HistoryDrawer.test.ts` — 6 tests)**:
+  - Modal open/close lifecycles, pass/fail threshold banners ($\ge 75$), itemized rubric evidence rendering.
+  - Drawer open/close lifecycles, chronological list ordering, active attempt indicator, and empty history notices.
+
 
 ---
 

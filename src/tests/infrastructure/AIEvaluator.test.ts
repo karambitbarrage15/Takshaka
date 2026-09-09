@@ -205,4 +205,78 @@ describe('AIEvaluator (Infrastructure)', () => {
     expect(feedback.overallScore).toBe(75);
     expect(promptContent).toContain('interface Vehicle { ... }');
   });
+
+  it('9. Safely defaults invalid or unprovided confidence to HIGH', async () => {
+    const mockLlm: LlmClient = async () =>
+      JSON.stringify({
+        overallScore: 82,
+        rubricEvaluations: [
+          {
+            criterion: 'Single Responsibility Principle',
+            score: 4,
+            evidence: 'Good delegation',
+            confidence: 'INVALID_CONFIDENCE', // unrecognized string
+          },
+        ],
+        strengths: [],
+        improvements: [],
+      });
+
+    const evaluator = new AIEvaluator(mockLlm);
+    const feedback = await evaluator.evaluate(sampleProblem, sampleSubmission);
+    expect(feedback.rubricEvaluations[0].confidence).toBe('HIGH');
+  });
+
+  it('10. Rejects overallScore exceeding 100 or below 0', async () => {
+    const mockLlmOver100: LlmClient = async () =>
+      JSON.stringify({
+        overallScore: 105,
+        rubricEvaluations: [
+          { criterion: 'Single Responsibility Principle', score: 5, evidence: 'great' },
+        ],
+      });
+
+    const evaluatorOver = new AIEvaluator(mockLlmOver100);
+    await expect(evaluatorOver.evaluate(sampleProblem, sampleSubmission)).rejects.toThrow(
+      'Invalid or missing overallScore in AI evaluation.'
+    );
+
+    const mockLlmBelow0: LlmClient = async () =>
+      JSON.stringify({
+        overallScore: -5,
+        rubricEvaluations: [
+          { criterion: 'Single Responsibility Principle', score: 1, evidence: 'bad' },
+        ],
+      });
+
+    const evaluatorUnder = new AIEvaluator(mockLlmBelow0);
+    await expect(evaluatorUnder.evaluate(sampleProblem, sampleSubmission)).rejects.toThrow(
+      'Invalid or missing overallScore in AI evaluation.'
+    );
+  });
+
+  it('11. Formats empty graph architecture submission cleanly in prompt', async () => {
+    let captured = '';
+    const mockLlm: LlmClient = async (prompt) => {
+      captured = prompt;
+      return JSON.stringify({
+        overallScore: 0,
+        rubricEvaluations: [
+          { criterion: 'Single Responsibility Principle', score: 1, evidence: 'None provided' },
+        ],
+        strengths: [],
+        improvements: ['Add classes'],
+      });
+    };
+
+    const emptySubmission: Submission = {
+      format: 'REACT_FLOW_GRAPH',
+      content: { nodes: [], edges: [] },
+    };
+
+    const evaluator = new AIEvaluator(mockLlm);
+    await evaluator.evaluate(sampleProblem, emptySubmission);
+    expect(captured).toContain('Empty architecture submission: No classes or interfaces were defined.');
+  });
 });
+

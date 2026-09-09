@@ -131,4 +131,57 @@ describe('POST /api/evaluate Route Handler', () => {
 
     evalSpy.mockRestore();
   });
+
+  it('8. Returns 500 with graceful error message when request body is unparseable JSON', async () => {
+    const brokenReq = new NextRequest('http://localhost:3000/api/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'NOT_JSON{]',
+    });
+
+    const res = await POST(brokenReq);
+    const json = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(json.success).toBe(false);
+  });
+
+  it('9. Successfully evaluates elevator-system problem with correct rubric mapping', async () => {
+    const mockFeedback: Feedback = {
+      overallScore: 90,
+      rubricEvaluations: [
+        {
+          criterion: 'Elevator dispatch logic is isolated behind a DispatchStrategy interface.',
+          score: 5,
+          evidence: 'LOOK dispatch strategy used',
+          confidence: 'HIGH',
+        },
+      ],
+      strengths: ['Great strategy isolation'],
+      improvements: [],
+    };
+
+    const evalSpy = vi.spyOn(AIEvaluator.prototype, 'evaluate').mockResolvedValueOnce(mockFeedback);
+
+    const req = createRequest({
+      problemId: 'elevator-system',
+      submission: {
+        format: 'REACT_FLOW_GRAPH',
+        content: {
+          nodes: [{ id: '1', name: 'ElevatorCar', type: 'CLASS', properties: '', methods: '' }],
+          edges: [],
+        },
+      },
+    });
+
+    const res = await POST(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.feedback.overallScore).toBe(90);
+
+    evalSpy.mockRestore();
+  });
 });
+

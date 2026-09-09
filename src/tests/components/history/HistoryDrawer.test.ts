@@ -105,4 +105,20 @@ describe('HistoryDrawer Component', () => {
 
     expect(onSelectSpy).toHaveBeenCalledWith('att-2');
   });
+
+  it('6. Renders empty history notice when attempts array is empty', () => {
+    const element = HistoryDrawer({
+      isOpen: true,
+      onClose: () => {},
+      attempts: [],
+      activeAttemptId: null,
+      onSelectAttempt: () => {},
+      onStartBlankAttempt: () => {},
+    });
+
+    const emptyNotice = element?.props.children.props.children[2];
+    expect(emptyNotice.props.children.props.children).toBe('No attempts yet. Start designing on the canvas.');
+  });
 });
+
+

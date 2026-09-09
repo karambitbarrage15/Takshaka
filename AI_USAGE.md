@@ -95,3 +95,21 @@ The server parses and validates this JSON before accepting it. If required field
 
 - **Subjectivity**: LLM evaluation of architectural trade-offs can vary slightly across temperatures; we set `temperature: 0.2` to ensure consistent, deterministic scoring.
 - **Context Window**: Highly complex designs with dozens of classes require careful serialization. For 2-day MVP problems (5–10 classes), context usage is minimal (~1,500 tokens).
+
+---
+
+## 8. Verification & Offline Testing Strategy
+
+To guarantee evaluation pipeline reliability without incurring recurring API costs or network flakiness during CI/CD:
+- **Dependency Inversion (`LlmClient`)**: The `AIEvaluator` constructor accepts an optional `LlmClient` function (`(prompt: string) => Promise<string>`).
+- **100% Offline Test Coverage**: All 20 AI and Route evaluation unit tests in `AIEvaluator.test.ts` and `EvaluateRoute.test.ts` execute against deterministic mock LLM clients.
+- **Tested Edge Cases**:
+  - Valid structured JSON scorecard extraction.
+  - Markdown code-fence stripping (````json ... ````).
+  - Malformed non-JSON response rejection.
+  - Missing field (`overallScore`, `rubricEvaluations`, `criterion`, `evidence`) rejection.
+  - Out-of-bounds score rejection ($< 0$ or $> 100$).
+  - Graceful fallback for unrecognized confidence strings to `"HIGH"`.
+  - Upstream provider 429 quota / 500 outage rejection.
+  - Multi-problem prompt composition (`parking-lot` and `elevator-system`).
+

@@ -225,4 +225,88 @@ describe('LocalStorageAttemptRepository', () => {
     await expect(ssrRepo.getById('ssr-1')).resolves.toBeNull();
     await expect(ssrRepo.getAllForProblem('parking-lot')).resolves.toEqual([]);
   });
+
+  it('8. Catches storage.setItem QuotaExceededError without crashing the application', async () => {
+    const quotaStorage: Storage = {
+      length: 0,
+      clear: () => {},
+      getItem: () => null,
+      key: () => null,
+      removeItem: () => {},
+      setItem: () => {
+        throw new Error('QuotaExceededError: storage full');
+      },
+    };
+
+    const quotaRepo = new LocalStorageAttemptRepository(quotaStorage, 'quota_key');
+    const attempt = new Attempt('att-q', 'parking-lot', sampleSubmission);
+
+    // Save should swallow quota error gracefully
+    await expect(quotaRepo.save(attempt)).resolves.toBeUndefined();
+  });
+
+  it('9. Drops corrupted records with invalid nodeType during rehydration', async () => {
+    storage.setItem(
+      'test_attempts',
+      JSON.stringify({
+        'bad-node-type': {
+          id: 'bad-node-type',
+          problemId: 'parking-lot',
+          status: AttemptStatus.DRAFT,
+          submission: {
+            format: 'REACT_FLOW_GRAPH',
+            content: {
+              nodes: [
+                {
+                  id: 'n1',
+                  name: 'Car',
+                  type: 'INVALID_TYPE_ENUM', // invalid NodeType
+                  properties: '',
+                  methods: '',
+                },
+              ],
+              edges: [],
+            },
+          },
+          feedback: null,
+          error: null,
+          createdAt: new Date().toISOString(),
+        },
+      })
+    );
+
+    const loaded = await repo.getById('bad-node-type');
+    expect(loaded).toBeNull();
+  });
+
+  it('10. getAllForProblem sorts attempts chronologically by createdAt', async () => {
+    const older = new Attempt(
+      'older',
+      'parking-lot',
+      sampleSubmission,
+      AttemptStatus.COMPLETED,
+      sampleFeedback,
+      null,
+      new Date('2026-09-01T10:00:00.000Z')
+    );
+    const newer = new Attempt(
+      'newer',
+      'parking-lot',
+      sampleSubmission,
+      AttemptStatus.DRAFT,
+      null,
+      null,
+      new Date('2026-09-02T10:00:00.000Z')
+    );
+
+    // Save out of order
+    await repo.save(newer);
+    await repo.save(older);
+
+    const results = await repo.getAllForProblem('parking-lot');
+    expect(results).toHaveLength(2);
+    expect(results[0].id).toBe('older');
+    expect(results[1].id).toBe('newer');
+  });
 });
+

@@ -129,4 +129,29 @@ describe('ScorecardModal Component', () => {
     const failVerdict = failBanner.props.children[0].props.children[1].props.children;
     expect(failVerdict).toBe('Needs Refinement');
   });
+
+  it('7. Renders strengths, improvements, and rubric details when present', () => {
+    const element = ScorecardModal({
+      isOpen: true,
+      onClose: () => {},
+      onRetry: () => {},
+      feedback: sampleFeedback,
+      attemptNumber: 1,
+      problemTitle: 'Design a Parking Lot',
+    });
+
+    expect(element).not.toBeNull();
+    const body = element?.props.children.props.children[1];
+    // Rubric section is at index 2 (0: Score Banner, 1: Strengths/Improvements grid, 2: Rubric Assessment)
+    const rubricSection = body.props.children[2];
+    expect(rubricSection).toBeDefined();
+    // Rubric items container is index 1 of rubricSection
+    const rubricItems = rubricSection.props.children[1].props.children;
+    expect(rubricItems).toHaveLength(1);
+    const headerRow = rubricItems[0].props.children[0];
+    expect(headerRow.props.children[0].props.children).toBe('Vehicle Abstraction');
+  });
 });
+
+
+

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Attempt, AttemptStatus } from '../../domain/Attempt';
-import { Submission, ArchitecturalGraph } from '../../domain/Submission';
+import { Submission, ArchitecturalGraph, NodeType } from '../../domain/Submission';
 import { Feedback } from '../../domain/Feedback';
 import { ImmutableAttemptError, DuplicateEvaluationError, InvalidStateTransitionError } from '../../domain/Errors';
 
@@ -160,4 +160,79 @@ describe('Attempt Domain Model', () => {
     // but we add a dummy assertion to check the box for the test run.
     expect(true).toBe(true);
   });
+
+  it('P. Direct transition DRAFT → COMPLETED is rejected with InvalidStateTransitionError', () => {
+    const attempt = new Attempt('1', 'prob-1', initialSubmission);
+    expect(attempt.status).toBe(AttemptStatus.DRAFT);
+    expect(() =>
+      attempt.complete({
+        overallScore: 80,
+        rubricEvaluations: [],
+        strengths: [],
+        improvements: [],
+      })
+    ).toThrow(InvalidStateTransitionError);
+  });
+
+  it('Q. updateSubmission is rejected when Attempt is in EVALUATING state', () => {
+    const attempt = new Attempt('1', 'prob-1', initialSubmission);
+    attempt.startEvaluation();
+    expect(attempt.status).toBe(AttemptStatus.EVALUATING);
+
+    expect(() =>
+      attempt.updateSubmission({ format: 'TEXT', content: 'modified code' })
+    ).toThrow(InvalidStateTransitionError);
+  });
+
+  it('R. complete() on FAILED attempt throws InvalidStateTransitionError', () => {
+    const attempt = new Attempt('1', 'prob-1', initialSubmission);
+    attempt.startEvaluation();
+    attempt.fail('Network timeout');
+    expect(attempt.status).toBe(AttemptStatus.FAILED);
+
+    expect(() =>
+      attempt.complete({
+        overallScore: 90,
+        rubricEvaluations: [],
+        strengths: [],
+        improvements: [],
+      })
+    ).toThrow(InvalidStateTransitionError);
+  });
+
+  it('S. retry() creates an isolated deep clone of submission so mutating clone does not affect original', () => {
+    const originalNodes = [
+      { id: 'n1', name: 'ParkingLot', type: NodeType.CLASS, properties: 'spots', methods: 'park()' },
+    ];
+    const originalSubmission: Submission = {
+      format: 'REACT_FLOW_GRAPH',
+      content: { nodes: originalNodes, edges: [] },
+    };
+    const completedAttempt = new Attempt('orig-1', 'prob-1', originalSubmission);
+    completedAttempt.startEvaluation();
+    completedAttempt.complete({
+      overallScore: 85,
+      rubricEvaluations: [],
+      strengths: [],
+      improvements: [],
+    });
+
+    const retriedAttempt = completedAttempt.retry('retry-1');
+    expect(retriedAttempt.status).toBe(AttemptStatus.DRAFT);
+
+    // Update submission on retried attempt
+    const newSubmission: Submission = {
+      format: 'REACT_FLOW_GRAPH',
+      content: { nodes: [], edges: [] },
+    };
+    retriedAttempt.updateSubmission(newSubmission);
+
+    // Ensure original completed attempt submission was untouched
+    const origGraph = completedAttempt.submission.content as ArchitecturalGraph;
+    const retryGraph = retriedAttempt.submission.content as ArchitecturalGraph;
+    expect(origGraph.nodes).toHaveLength(1);
+    expect(retryGraph.nodes).toHaveLength(0);
+  });
 });
+
+

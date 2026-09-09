@@ -14,7 +14,7 @@ export default function HomePage() {
             <span className="text-base font-bold tracking-tight">LLD Practice Platform</span>
           </div>
           <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-            Phase 6E Workspace MVP
+            Interactive Practice Platform
           </span>
         </div>
       </header>

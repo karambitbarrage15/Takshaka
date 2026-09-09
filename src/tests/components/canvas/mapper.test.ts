@@ -134,4 +134,32 @@ describe('Canvas Mapper (React Flow <-> Domain Boundary)', () => {
     expect(nodes).toEqual([]);
     expect(edges).toEqual([]);
   });
+
+  it('5. Handles null or undefined submission content without crashing', () => {
+    const nullSubmission = {
+      format: 'REACT_FLOW_GRAPH',
+      content: null,
+    } as unknown as Submission;
+
+    const { nodes, edges } = submissionToGraph(nullSubmission);
+    expect(nodes).toEqual([]);
+    expect(edges).toEqual([]);
+  });
+
+  it('6. Safely defaults missing node fields (name, type, properties, methods) in graphToSubmission', () => {
+    const bareNode = {
+      id: 'bare-1',
+      type: 'classNode',
+      position: { x: 0, y: 0 },
+      data: {} as ClassFlowNode['data'], // missing all fields
+    };
+
+    const submission = graphToSubmission([bareNode], []);
+    const graph = submission.content as ArchitecturalGraph;
+    expect(graph.nodes[0].name).toBe('');
+    expect(graph.nodes[0].type).toBe(NodeType.CLASS);
+    expect(graph.nodes[0].properties).toBe('');
+    expect(graph.nodes[0].methods).toBe('');
+  });
 });
+

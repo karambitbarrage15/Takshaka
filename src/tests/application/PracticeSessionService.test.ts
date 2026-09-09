@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { PracticeSessionService } from '../../application/PracticeSessionService';
 import { AttemptRepository } from '../../domain/AttemptRepository';
 import { Attempt, AttemptStatus } from '../../domain/Attempt';
-import { Submission, NodeType } from '../../domain/Submission';
+import { Submission, NodeType, ArchitecturalGraph } from '../../domain/Submission';
 import { Feedback } from '../../domain/Feedback';
 import {
   AttemptNotFoundError,
@@ -216,4 +216,51 @@ describe('PracticeSessionService (Application Layer)', () => {
     await expect(service.failAttempt('ghost-id', 'err')).rejects.toThrow(AttemptNotFoundError);
     await expect(service.retryAttempt('ghost-id')).rejects.toThrow(AttemptNotFoundError);
   });
+
+  it('14. Resubmitting a FAILED attempt transitions status back to EVALUATING and clears error', async () => {
+    await service.startAttempt('parking-lot');
+    await service.submitAttempt('att-1');
+    await service.failAttempt('att-1', 'Initial network timeout');
+
+    const failed = await service.getAttempt('att-1');
+    expect(failed!.status).toBe(AttemptStatus.FAILED);
+    expect(failed!.error).toBe('Initial network timeout');
+
+    // Resubmit on the same attempt
+    const resubmitted = await service.submitAttempt('att-1');
+    expect(resubmitted.status).toBe(AttemptStatus.EVALUATING);
+    expect(resubmitted.error).toBeNull();
+  });
+
+  it('15. Attempt retry cycle preserves historical completed record when saving drafts on new attempt', async () => {
+    await service.startAttempt('parking-lot', sampleSubmission);
+    await service.submitAttempt('att-1');
+    await service.completeAttempt('att-1', sampleFeedback);
+
+    // Trigger retry
+    const retryAttempt = await service.retryAttempt('att-1');
+    expect(retryAttempt.id).toBe('att-2');
+
+    // Modify the new attempt's draft
+    const modifiedSubmission: Submission = {
+      format: 'REACT_FLOW_GRAPH',
+      content: { nodes: [], edges: [] },
+    };
+    await service.saveDraft('att-2', modifiedSubmission);
+
+    // Verify original attempt in repository remains unchanged
+    const original = await repo.getById('att-1');
+    expect(original!.status).toBe(AttemptStatus.COMPLETED);
+    expect(original!.feedback).toEqual(sampleFeedback);
+    const origGraph = original!.submission.content as ArchitecturalGraph;
+    expect(origGraph.nodes).toHaveLength(1);
+
+    // Verify retried attempt was updated
+    const retried = await repo.getById('att-2');
+    expect(retried!.status).toBe(AttemptStatus.DRAFT);
+    const retryGraph = retried!.submission.content as ArchitecturalGraph;
+    expect(retryGraph.nodes).toHaveLength(0);
+  });
 });
+
+

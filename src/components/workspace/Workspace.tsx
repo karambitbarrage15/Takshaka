@@ -54,8 +54,8 @@ export function Workspace({ problem }: WorkspaceProps) {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
-      {/* Left Pane: Problem Requirements & Rubric (380px) */}
-      <div className="w-[380px] shrink-0 border-r border-border bg-card">
+      {/* Left Pane: Problem Requirements & Rubric (420px) */}
+      <div className="w-[420px] shrink-0 border-r border-border bg-card">
         <ProblemPanel problem={problem} />
       </div>
 

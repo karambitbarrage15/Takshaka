@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Research Note - Takshaka</title>
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1a202c;
+    background: #fff;
+    line-height: 1.4;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    font-size: 16pt;
+    color: #0f172a;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 4px;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 12pt;
+    color: #1e3a8a;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 3px;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 10.5pt;
+    color: #2563eb;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 6px;
+  }
+  ul, ol {
+    margin-top: 0;
+    margin-bottom: 6px;
+    padding-left: 18px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 8px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 5px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+  pre {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 8pt;
+    font-family: Consolas, "Courier New", monospace;
+    overflow-x: auto;
+    margin: 8px 0;
+    line-height: 1.3;
+    page-break-inside: avoid;
+  }
+  code {
+    background: #f1f5f9;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 9pt;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+  }
+  .badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<h1>Research Note: Low-Level Design (LLD) Practice Platform</h1>
+<p><strong>Project</strong>: Takshaka — Low-Level Design Practice Platform  </p>
+<p><strong>Deliverable</strong>: Research Note (2-Day Engineering Assignment, Section 7)  </p>
+<hr/>
+<h2>1. The Learner Problem</h2>
+<p>Preparing for Low-Level Design (LLD), object-oriented design, and machine-coding interviews presents a severe learning gap:</p>
+<ul><li><strong>Easy to start, hard to evaluate</strong>: A candidate can sketch classes for a Parking Lot or Elevator System, but has no objective mechanism to know if their class boundaries, abstractions, coupling, and trade-offs are actually sound without paying for expensive human mock interviews ($150–$300/hr).</li><li><strong>Misaligned automated judges</strong>: Traditional competitive programming judges (LeetCode, HackerRank) only test <em>black-box algorithmic inputs and outputs</em>. They do not evaluate architectural design, single responsibility, encapsulation, or extensibility.</li><li><strong>Passive reading paralysis</strong>: Candidates read GitHub repositories (e.g. <em>awesome-low-level-design</em>) and watch YouTube videos, but passive consumption fails to build real-time spatial and structural synthesis skills.</li></ul>
+<hr/>
+<h2>2. Existing Approaches Researched</h2>
+<p>We researched three primary benchmarks in the LLD and machine-coding ecosystem:</p>
+<h3>Benchmark 1: LLDCanvas (https://www.lldcanvas.in/)</h3>
+<ul><li><strong>Workflow</strong>: Offers problem statements with staged hints, plain-text "Draft Notation" that generates UML diagrams, and an in-browser code editor.</li><li><strong>Evaluation</strong>: Self-directed. There is <strong>no automated evaluation or scoring engine</strong>. Candidates must consult community discussion threads to manually compare their solutions with others.</li><li><strong>Takeaway</strong>: High friction on validation; great at diagramming, but lacks automated, personalized feedback.</li></ul>
+<h3>Benchmark 2: HelloInterview (https://www.hellointerview.com/practice/low-level-design)</h3>
+<ul><li><strong>Workflow</strong>: Step-by-step guided practice (Requirements → Core Entities → Class Design → Implementation → Extensibility) led by an AI conversational bot.</li><li><strong>Evaluation</strong>: AI-assisted interview interaction.</li><li><strong>Gaps</strong>: Hard login walls and paywalls. Highly chat-heavy rather than visual; candidates write long conversational text responses instead of modeling architectural systems visually.</li></ul>
+<h3>Benchmark 3: LLD Arena (https://github.com/mightbeanshuu/lld-arena)</h3>
+<ul><li><strong>Workflow</strong>: Public dashboard with split-pane Monaco code editor (Java only).</li><li><strong>Evaluation</strong>: Hybrid model. Uses local <code>javac</code> execution for unit tests, combined with an LLM prompt enforcing a strict JSON rubric scorecard.</li><li><strong>Takeaway</strong>: Proved that <strong>rubric-driven LLM evaluation with strict JSON schema output</strong> produces actionable feedback. However, requiring code execution in an in-browser environment creates security, runtime sandboxing, and language-lock-in challenges.</li></ul>
+<hr/>
+<h2>3. Key Gaps Identified</h2>
+<table>
+  <thead><tr><th>Dimension</th><th>Existing Tools</th><th>Candidate Pain Point</th></tr></thead>
+  <tbody>
+  <tr><td><strong>Feedback Mechanism</strong></td><td>Binary pass/fail unit tests OR unguided community forums</td><td>Ignores architectural principles (SOLID, coupling, cohesion)</td></tr>
+  <tr><td><strong>Input Modality</strong></td><td>100+ lines of boilerplate code OR unstructured text paragraphs</td><td>Candidates spend time debugging syntax instead of designing domain abstractions</td></tr>
+  <tr><td><strong>Accessibility</strong></td><td>Login walls, subscriptions, or local-only Docker setups</td><td>High barrier to quick, daily interview practice</td></tr>
+  <tr><td><strong>Iteration Loop</strong></td><td>One-off submission with ephemeral feedback</td><td>No immutable attempt history or side-by-side iterative comparison</td></tr>
+  </tbody>
+</table>
+<hr/>
+<h2>4. Product Direction & MVP Synthesis</h2>
+<p>Based on these findings, we designed <strong>Takshaka</strong> with the following foundational decisions:</p>
+<ol><li><strong>Visual Whiteboard Modeling over Raw Syntax</strong>:</li></ol>
+<p>   - Candidates model their domain architecture using custom UML nodes (Classes, Interfaces, Abstract Classes, Enums) and typed relationships (Inheritance, Implementation, Composition, Association).</p>
+<p>   - This eliminates language syntax overhead while extracting clean, structured architectural signals (class responsibilities, methods, fields, and dependencies).</p>
+<ol><li><strong>Rubric-Driven, Zero-Hallucination AI Evaluation</strong>:</li></ol>
+<p>   - Rather than asking an LLM an open-ended question (<em>"Is this good?"</em>), the engine injects an <strong>authoritative, multi-criterion rubric</strong> tailored to the problem.</p>
+<p>   - The engine scores each criterion independently (1–5), providing concrete evidence cited directly from the candidate's design, alongside targeted concerns and actionable suggestions.</p>
+<ol><li><strong>Immutable History & Iterative Retry Loop</strong>:</li></ol>
+<p>   - Completed attempts are locked and immutable.</p>
+<p>   - Clicking <em>"Try Again"</em> clones the current graph into a fresh draft, enabling candidates to refactor their architecture and observe measurable score progression over multiple iterations.</p>
+<ol><li><strong>Zero-Friction, Serverless Delivery</strong>:</li></ol>
+<p>   - No login walls, no mandatory databases.</p>
+<p>   - Fast, client-side persistence with Next.js Turbopack and serverless evaluation hosted on Vercel.</p>
+
+</body>
+</html>

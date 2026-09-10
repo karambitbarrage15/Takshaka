@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design Note - Takshaka</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 18mm;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1a202c;
+    background: #fff;
+    line-height: 1.5;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    font-size: 18pt;
+    color: #0f172a;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 4px;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #1e3a8a;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 3px;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #2563eb;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    page-break-after: avoid;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 6px;
+  }
+  ul, ol {
+    margin-top: 0;
+    margin-bottom: 6px;
+    padding-left: 18px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 8px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 5px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+  pre {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 8pt;
+    font-family: Consolas, "Courier New", monospace;
+    overflow-x: auto;
+    margin: 8px 0;
+    line-height: 1.3;
+    page-break-inside: avoid;
+  }
+  code {
+    background: #f1f5f9;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 9pt;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+  }
+  .badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<h1>Design Note: Low-Level Design (LLD) Practice Platform</h1>
+<p><strong>Project</strong>: Takshaka — Low-Level Design Practice Platform  </p>
+<p><strong>Deliverable</strong>: Design Note (2-Day Engineering Assignment, Section 7)  </p>
+<hr/>
+<h2>1. MVP Overview</h2>
+<p><strong>Takshaka</strong> is an interactive, zero-setup platform designed to replicate real-world Low-Level Design interview practice. Candidates design domain architectures on an interactive UML canvas, submit them for automated evaluation against an authoritative rubric, and inspect structured scorecards to iterate their designs.</p>
+<hr/>
+<h2>2. End-to-End User Flow</h2>
+<p>The platform enforces an intentional 6-step practice loop:</p>
+<pre><code>┌───────────────┐     ┌───────────────┐     ┌───────────────┐
+│ 1. Catalog    │     │ 2. Whiteboard │     │ 3. Submit     │
+│ Select LLD    │ ──► │ Design classes│ ──► │ Snapshot &amp; lock│
+│ problem       │     │ &amp; relationships│     │ state machine │
+└───────────────┘     └───────────────┘     └───────┬───────┘
+                                                    │
+┌───────────────┐     ┌───────────────┐             │
+│ 6. Try Again  │     │ 5. Review     │     ┌───────▼───────┐
+│ Clone graph to│ ◄── │ Inspect scores│ ◄── │ 4. Evaluate   │
+│ fresh attempt │     │ &amp; evidence    │     │ AI / Fallback │
+└───────────────┘     └───────────────┘     │ Scorecard     │
+                                            └───────────────┘
+</code></pre>
+<ol><li><strong>Problem Discovery</strong>: Candidate browses the catalog on the homepage and selects a problem (e.g. <em>Parking Lot</em> or <em>Elevator System</em>).</li><li><strong>Dual-Pane Workspace</strong>: Left pane shows functional requirements and rubric criteria; right pane opens the interactive React Flow whiteboard.</li><li><strong>Whiteboard Modeling</strong>: Candidate creates UML nodes (<code>class</code>, <code>interface</code>, <code>abstract class</code>, <code>enum</code>), adds attributes and methods, and connects relationships (<code>Inheritance</code>, <code>Implementation</code>, <code>Aggregation</code>, <code>Composition</code>, <code>Association</code>, <code>Dependency</code>).</li><li><strong>Submission</strong>: Candidate clicks <em>"Submit Architecture"</em>. The attempt transitions from <code>DRAFT</code> to <code>EVALUATING</code>, locking the canvas to prevent race conditions.</li><li><strong>Scorecard & Feedback</strong>: Server evaluates the submission against the rubric and returns a structured <code>Feedback</code> scorecard (0–100 score, per-criterion scores with evidence, concerns, suggestions, strengths, and improvements).</li><li><strong>Iteration / History</strong>: Completed attempts are saved immutably. Clicking <em>"Try Again (Clone & Iterate)"</em> spawns a new <code>DRAFT</code> attempt with the current graph, allowing candidates to address critique and re-submit.</li></ol>
+<hr/>
+<h2>3. Core Domain Model & Hexagonal Architecture</h2>
+<p>The platform strictly adheres to <strong>Clean Architecture / Ports & Adapters</strong>. The domain layer (<code>src/domain/</code>) has <strong>zero dependencies</strong> on UI frameworks, React, Next.js, or AI vendor SDKs.</p>
+<pre><code>                           ┌──────────────────────────────┐
+                           │    Presentation Layer (UI)   │
+                           │  (Next.js, React Flow Canvas)│
+                           └──────────────┬───────────────┘
+                                          │
+                                          ▼
+                           ┌──────────────────────────────┐
+                           │      Application Layer       │
+                           │   (PracticeSessionService)   │
+                           └──────┬────────────────┬──────┘
+                                  │                │
+            ┌─────────────────────┘                └────────────────────┐
+            ▼                                                           ▼
+┌─────────────────────────┐                                 ┌─────────────────────────┐
+│     Secondary Port      │                                 │     Secondary Port      │
+│    AttemptRepository    │                                 │        Evaluator        │
+└───────────▲─────────────┘                                 └───────────▲─────────────┘
+            │                                                           │
+┌───────────┴─────────────┐                                 ┌───────────┴─────────────┐
+│  Infrastructure Adapter │                                 │  Infrastructure Adapter │
+│LocalStorageAttemptRepo  │                                 │   AIEvaluator (Gemini)  │
+└─────────────────────────┘                                 │   FallbackEvaluator     │
+                                                            └─────────────────────────┘
+</code></pre>
+<h3>Core Entities & Value Objects:</h3>
+<ul><li><strong><code>Problem</code> (Entity)</strong>: Owns problem requirements, constraints, and authoritative <code>RubricCriterion[]</code>.</li><li><strong><code>Attempt</code> (Aggregate Root)</strong>: Manages lifecycle states (<code>DRAFT</code> → <code>EVALUATING</code> → <code>COMPLETED</code> / <code>FAILED</code>). Enforces invariants (e.g. completed attempts cannot be modified or re-completed).</li><li><strong><code>Submission</code> (Value Object)</strong>: Contains immutable submission content (<code>format</code>, <code>content</code>, <code>submittedAt</code>). Decoupled from React Flow node structures via an Anti-Corruption Layer (<code>mapper.ts</code>).</li><li><strong><code>Feedback</code> (Value Object)</strong>: Structured evaluation outcome (<code>overallScore</code>, <code>rubricEvaluations</code>, <code>strengths</code>, <code>improvements</code>).</li><li><strong><code>RubricEvaluation</code> (Value Object)</strong>: Granular evaluation per criterion (<code>criterion</code>, <code>score</code> 1-5, <code>evidence</code>, <code>concern</code>, <code>suggestion</code>, <code>confidence</code>).</li></ul>
+<h3>Outbound Ports (Interfaces):</h3>
+<ul><li><strong><code>Evaluator</code></strong>: <code>evaluate(problem: Problem, submission: Submission): Promise<Feedback></code></li><li><strong><code>AttemptRepository</code></strong>: <code>save(attempt: Attempt): Promise<void></code>, <code>getById(id: string): Promise<Attempt | null></code>, <code>listByProblemId(problemId: string): Promise<Attempt[]></code></li></ul>
+<hr/>
+<h2>4. Evaluation Approach & Strategy</h2>
+<h3>Separation of Deterministic vs. Judgment Checks:</h3>
+<ul><li><strong>Deterministic</strong>: Input schema validation (Zod), minimum entity count requirements, state machine lifecycle transitions, duplicate-submission guards, and fallback rubric scoring.</li><li><strong>LLM-Powered Reasoning</strong>: Architectural synthesis, evaluation of SOLID principles (SRP, OCP, LSP, ISP, DIP), separation of concerns, pattern identification (Strategy, Factory, State), and contextual feedback.</li></ul>
+<h3>Zero-Hallucination Prompt Engineering:</h3>
+<ul><li>The evaluation engine sends the <strong>authoritative problem rubric</strong> directly in the system prompt.</li><li>The model is strictly instructed:</li></ul>
+<p>  1. Evaluate <em>only</em> architectural design and relationships (not syntax).</p>
+<p>  2. Grade <em>every</em> rubric criterion.</p>
+<p>  3. Cite <em>concrete evidence</em> directly from the candidate's classes.</p>
+<p>  4. Return strictly valid JSON conforming to the <code>Feedback</code> schema.</p>
+<h3>Resilience & Offline Fallback:</h3>
+<ul><li>In <code>src/app/api/evaluate/route.ts</code>, if <code>GEMINI_API_KEY</code> or <code>OPENAI_API_KEY</code> is not present, or if external network calls fail, the system automatically delegates to <code>DeterministicFallbackEvaluator</code>, guaranteeing uninterrupted practice without runtime crashes.</li></ul>
+<hr/>
+<h2>5. Architectural Change Tests</h2>
+<p>The architecture was explicitly challenged with the two assignment change tests:</p>
+<h3>Change Test A: Evolving Submission Formats</h3>
+<ul><li><em>Question</em>: Today the learner submits UML diagrams. Later, how would you support code or plain text?</li><li><em>Solution</em>: The domain <code>Submission</code> model is an abstract payload with a <code>format: SubmissionFormat</code> discriminator. To support code, we simply add a code editor adapter (e.g. Monaco) that emits <code>SubmissionFormat.CODE</code>. The <code>Attempt</code> aggregate, state machine, repository, and session services require <strong>zero changes</strong>.</li></ul>
+<h3>Change Test B: Swapping the Evaluator Implementation</h3>
+<ul><li><em>Question</em>: Today feedback comes from an AI evaluator. Later, how do you add a rule-based evaluator or human review without rewriting practice flow?</li><li><em>Solution</em>: The <code>Evaluator</code> port is an interface. <code>PracticeSessionService</code> and <code>/api/evaluate</code> depend solely on the interface. A human review evaluator (<code>HumanReviewEvaluator implements Evaluator</code>) or rule-based evaluator (<code>StaticAnalysisEvaluator implements Evaluator</code>) can be plugged in via dependency injection with <strong>zero modification to the domain or UI flow</strong>.</li></ul>
+<hr/>
+<h2>6. Key Engineering Trade-Offs</h2>
+<table>
+  <thead><tr><th>Decision</th><th>Alternative Considered</th><th>Rationale & Trade-Off</th></tr></thead>
+  <tbody>
+  <tr><td><strong>Visual Whiteboard Canvas</strong></td><td>Monaco code editor (Java/C++)</td><td>Whiteboards test <em>spatial architectural thinking</em> and relationships directly, eliminating syntax/compilation debugging time in an interview setting.</td></tr>
+  <tr><td><strong>Client-Side Persistence (<code>localStorage</code>)</strong></td><td>PostgreSQL / Supabase</td><td>Provides zero-latency autosave and zero setup friction for candidates. Simplifies deployment to a serverless monolith without external database dependencies.</td></tr>
+  <tr><td><strong>Strict JSON Rubric Prompting</strong></td><td>Conversational Chatbot</td><td>Conversational chatbots hallucinate scores and give vague advice. Structured JSON guarantees measurable 0–100 scorecards, structured evidence, and repeatable retry benchmarking.</td></tr>
+  <tr><td><strong>Synchronous Serverless Route</strong></td><td>Distributed Task Queue (Redis/BullMQ)</td><td>In an MVP with single-digit concurrent users, an async queue adds massive operational complexity (Redis, worker fleets) for a 2–3 second AI call. A lightweight Next.js route keeps deployment practical and robust.</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>

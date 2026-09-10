@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import {
   ReactFlow,
   Controls,
+  MiniMap,
   Background,
   BackgroundVariant,
   OnNodesChange,
@@ -54,6 +55,28 @@ export function ReactFlowCanvas({
       >
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
         <Controls showInteractive={!isLocked} />
+        <MiniMap
+          position="bottom-right"
+          nodeColor={(node) => {
+            const type = (node.data as { type?: string })?.type;
+            switch (type) {
+              case 'INTERFACE':
+                return '#a855f7';
+              case 'ABSTRACT_CLASS':
+                return '#3b82f6';
+              case 'ENUM':
+                return '#eab308';
+              default:
+                return '#f97316';
+            }
+          }}
+          nodeStrokeWidth={1}
+          nodeBorderRadius={4}
+          maskColor="rgba(0, 0, 0, 0.4)"
+          className="!m-4 !rounded-xl !border !border-border !bg-card/85 !shadow-lg !backdrop-blur-md"
+          zoomable
+          pannable
+        />
       </ReactFlow>
 
       {/* Empty State Watermark */}

@@ -1,4 +1,7 @@
-import Link from 'next/link';
+﻿const fs = require("fs");
+const path = require("path");
+
+const pageCode = `import Link from 'next/link';
 import Image from 'next/image';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { DashboardMockup } from '../components/home/DashboardMockup';
@@ -149,7 +152,7 @@ export default function HomePage() {
               {PROBLEMS.map((problem) => (
                 <Link
                   key={problem.id}
-                  href={`/problem/${problem.id}`}
+                  href={\`/problem/\${problem.id}\`}
                   className="group relative flex flex-col justify-between rounded-xl border border-border p-7 transition hover:border-foreground/30 hover:bg-muted/30"
                 >
                   <div>
@@ -205,3 +208,7 @@ export default function HomePage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync(path.resolve("src/app/page.tsx"), pageCode, "utf-8");
+console.log("src/app/page.tsx updated successfully!");

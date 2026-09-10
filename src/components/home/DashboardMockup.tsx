@@ -148,59 +148,100 @@ export function DashboardMockup() {
             {/* Dashboard Dual-Pane Workspace (Matching Image 1 Layout) */}
             <div className="relative flex h-[420px] sm:h-[480px] md:h-[530px] w-full overflow-hidden">
               
-              {/* Left Pane: Requirements & Problem Overview (Matching Image 1) */}
-              <div className="hidden md:flex w-64 flex-col justify-between border-r border-zinc-800/80 bg-[#12141a] p-3.5 text-[11px] overflow-hidden">
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-bold text-zinc-100 text-sm tracking-tight">
+              {/* Left Pane: Requirements & Problem Overview (Matching Redesigned Canvas Sidebar) */}
+              <div className="hidden md:flex w-72 flex-col justify-between border-r border-zinc-800/80 bg-[#12141a] p-4 text-[11px] overflow-hidden">
+                <div className="space-y-4 overflow-hidden">
+                  {/* Meta badges & Title */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[9.5px]">
+                      <span className="rounded-full bg-primary/15 px-2 py-0.5 font-semibold text-primary">
+                        Intermediate
+                      </span>
+                      <span className="rounded-full bg-zinc-800/90 px-2 py-0.5 font-medium text-zinc-400 border border-zinc-700/60">
+                        45 min
+                      </span>
+                      <span className="rounded-full bg-zinc-800/90 px-2 py-0.5 font-medium text-zinc-400 border border-zinc-700/60">
+                        5 Reqs
+                      </span>
+                    </div>
+
+                    <h4 className="font-serif font-bold text-zinc-100 text-sm tracking-tight pt-0.5">
                       Design a Parking Lot
                     </h4>
-                    <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-mono font-semibold">
-                      Problem Overview
-                    </span>
-                    <p className="mt-1 text-[10.5px] leading-relaxed text-zinc-400">
+
+                    <p className="text-[10px] leading-relaxed text-zinc-400 line-clamp-2">
                       Multi-floor parking lot management handling diverse vehicle types, spot allocation, and fee strategies.
                     </p>
                   </div>
 
-                  <div className="border-t border-zinc-800/80 pt-2.5">
-                    <span className="text-[9px] uppercase tracking-wider text-primary font-mono font-bold">
-                      Functional Requirements
-                    </span>
-                    <ul className="mt-1.5 space-y-1.5 text-[10px] text-zinc-400">
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-primary font-bold">•</span>
-                        <span>Multi-floor spot sizes (Small, Medium, Large)</span>
+                  {/* Functional Scope (Numbered) */}
+                  <div className="border-t border-zinc-800/80 pt-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] uppercase tracking-wider text-zinc-200 font-bold">
+                        Functional Scope
+                      </span>
+                      <span className="text-[9px] text-zinc-500 font-medium">
+                        5 checkpoints
+                      </span>
+                    </div>
+
+                    <ol className="space-y-1.5 text-[10px] text-zinc-300">
+                      <li className="flex items-start gap-2">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-zinc-800/90 text-[8.5px] font-bold text-zinc-400 border border-zinc-700/70">
+                          1
+                        </span>
+                        <span className="pt-0.5 leading-snug">Multi-floor spot sizes (Small, Medium, Large)</span>
                       </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-primary font-bold">•</span>
-                        <span>Vehicle hierarchy: Motorcycle, Car, Truck</span>
+                      <li className="flex items-start gap-2">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-zinc-800/90 text-[8.5px] font-bold text-zinc-400 border border-zinc-700/70">
+                          2
+                        </span>
+                        <span className="pt-0.5 leading-snug">Vehicle hierarchy: Motorcycle, Car, Truck</span>
                       </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-primary font-bold">•</span>
-                        <span>Decoupled fee calculation via Strategy Pattern</span>
+                      <li className="flex items-start gap-2">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-zinc-800/90 text-[8.5px] font-bold text-zinc-400 border border-zinc-700/70">
+                          3
+                        </span>
+                        <span className="pt-0.5 leading-snug">Decoupled fee calculation via Strategy Pattern</span>
                       </li>
-                      <li className="flex items-start gap-1.5">
-                        <span className="text-primary font-bold">•</span>
-                        <span>Ticket issuance with timestamp on entry</span>
+                      <li className="flex items-start gap-2">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-zinc-800/90 text-[8.5px] font-bold text-zinc-400 border border-zinc-700/70">
+                          4
+                        </span>
+                        <span className="pt-0.5 leading-snug">Ticket issuance with timestamp on entry</span>
                       </li>
-                    </ul>
+                    </ol>
                   </div>
 
-                  <div className="border-t border-zinc-800/80 pt-2">
-                    <span className="text-[9px] uppercase tracking-wider text-emerald-400 font-mono font-bold">
-                      Rubric Criteria
-                    </span>
-                    <div className="mt-1 flex items-center justify-between rounded-md bg-emerald-950/30 border border-emerald-800/40 px-2 py-1 text-[10px]">
-                      <span className="text-zinc-300">Vehicle Polymorphism</span>
-                      <span className="font-mono font-bold text-emerald-400">5 / 5</span>
+                  {/* Evaluation Rubric Cards */}
+                  <div className="border-t border-zinc-800/80 pt-2.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] uppercase tracking-wider text-zinc-200 font-bold">
+                        Evaluation Rubric
+                      </span>
+                      <span className="text-[8.5px] font-semibold text-primary uppercase tracking-wider">
+                        Graded Strictly
+                      </span>
+                    </div>
+
+                    <div className="rounded-md border border-zinc-800 bg-[#161822] p-2">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-medium text-zinc-200">Vehicle Abstraction</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      </div>
+                      <p className="mt-0.5 text-[9px] leading-tight text-zinc-400">
+                        Polymorphic Vehicle hierarchy rather than hardcoded types.
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-800/60 pt-2 text-[10px] text-zinc-500 font-mono flex items-center justify-between">
-                  <span>Interactive Canvas</span>
-                  <span className="text-emerald-400">Active</span>
+                <div className="border-t border-zinc-800/60 pt-2 text-[10px] text-zinc-500 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Evaluation Ready</span>
+                  </span>
+                  <span className="font-mono text-[9px] text-zinc-400">v1.0</span>
                 </div>
               </div>
 

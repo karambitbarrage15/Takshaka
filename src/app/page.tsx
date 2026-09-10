@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { DashboardMockup } from '../components/home/DashboardMockup';
+import { SpotlightCard } from '../components/home/SpotlightCard';
 import DarkVeil from '../components/home/DarkVeil';
 import { PROBLEMS } from '../data/problems';
 
@@ -105,37 +106,37 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* 3 Distinct Glassmorphic Boxes */}
+            {/* 3 Distinct Spotlight Boxes with Cursor-Following Border Glow */}
             <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {/* Box 1 */}
-              <div className="rounded-2xl border border-neutral-800/80 bg-neutral-950/50 p-6 sm:p-7 backdrop-blur-sm transition-all duration-300 hover:border-neutral-700 hover:bg-neutral-900/50 hover:shadow-lg">
+              <SpotlightCard className="p-6 sm:p-7">
                 <h3 className="text-lg font-bold text-white tracking-tight">
                   Domain-First Whiteboard
                 </h3>
                 <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-neutral-400">
                   Compose classes, interfaces, abstract contracts, and enums directly on an interactive canvas with typed UML relationships (Inheritance, Implementation, Strategy injection).
                 </p>
-              </div>
+              </SpotlightCard>
 
               {/* Box 2 */}
-              <div className="rounded-2xl border border-neutral-800/80 bg-neutral-950/50 p-6 sm:p-7 backdrop-blur-sm transition-all duration-300 hover:border-neutral-700 hover:bg-neutral-900/50 hover:shadow-lg">
+              <SpotlightCard className="p-6 sm:p-7">
                 <h3 className="text-lg font-bold text-white tracking-tight">
                   Authoritative Rubric Grading
                 </h3>
                 <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-neutral-400">
                   Zero hallucinated standards. Your design is judged strictly against the problem&apos;s predefined rubric dimensions, extracting line-by-line evidence from your architecture.
                 </p>
-              </div>
+              </SpotlightCard>
 
               {/* Box 3 */}
-              <div className="rounded-2xl border border-neutral-800/80 bg-neutral-950/50 p-6 sm:p-7 backdrop-blur-sm transition-all duration-300 hover:border-neutral-700 hover:bg-neutral-900/50 hover:shadow-lg">
+              <SpotlightCard className="p-6 sm:p-7">
                 <h3 className="text-lg font-bold text-white tracking-tight">
                   Immutable Attempt History
                 </h3>
                 <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-neutral-400">
                   Every submission is locked and scored. Clone your canvas to refactor coupling, improve separation of concerns, and benchmark your progress across multiple iterations.
                 </p>
-              </div>
+              </SpotlightCard>
             </div>
           </div>
         </section>
@@ -165,49 +166,46 @@ export default function HomePage() {
               {PROBLEMS.map((problem) => {
                 const isIntermediate = problem.id === 'parking-lot';
                 const badgeLabel = isIntermediate ? 'Intermediate' : 'Advanced';
-
                 return (
-                  <Link
-                    key={problem.id}
-                    href={`/problem/${problem.id}`}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-neutral-800/80 bg-neutral-950/60 p-7 pt-8 transition hover:border-neutral-700 hover:bg-neutral-900/50 hover:shadow-lg"
-                  >
-                    {/* Top Pill Badge (matching Image 1) */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="inline-flex items-center rounded-full bg-primary px-3.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-sm ring-2 ring-black">
+                  <div key={problem.id} className="relative pt-3">
+                    {/* Centered pill badge straddling the top border */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+                      <span className="inline-flex items-center rounded-full bg-primary px-3.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-md ring-2 ring-black">
                         {badgeLabel}
                       </span>
                     </div>
 
-                    <div>
-                      <div className="flex items-center justify-between text-xs font-mono text-neutral-400">
-                        <span>{problem.requirements.length} Requirements</span>
-                        <span className="text-[11px] font-sans text-primary font-medium">Authoritative Rubric</span>
+                    <SpotlightCard className="p-7 pt-9">
+                      <Link
+                        href={`/problem/${problem.id}`}
+                        className="group flex flex-col justify-between h-full"
+                      >
+                        <div>
+                          <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
+                            {problem.title}
+                          </h3>
+
+                        <p className="mt-2.5 text-xs leading-relaxed text-neutral-400">
+                          {problem.description}
+                        </p>
+
+                        <p className="mt-5 text-xs leading-relaxed text-neutral-400">
+                          <span className="font-semibold text-neutral-300">Evaluates: </span>
+                          {isIntermediate
+                            ? 'Vehicle abstraction, parking spot encapsulation, lot cohesion, and decoupled fee strategy.'
+                            : 'Elevator state modeling, request abstraction, dispatch strategy, and system coordination.'}
+                        </p>
                       </div>
 
-                      <h3 className="mt-3 text-xl font-bold text-white group-hover:text-primary transition-colors">
-                        {problem.title}
-                      </h3>
-
-                      <p className="mt-2.5 text-xs leading-relaxed text-neutral-400">
-                        {problem.description}
-                      </p>
-
-                      <div className="mt-6 text-[11px] font-mono text-neutral-500">
-                        <span>Evaluates: </span>
-                        <span className="text-neutral-300 font-sans font-medium">
-                          {problem.rubric.map(r => r.id.replace('req-', '').replace(/-/g, ' ')).join(' · ')}
-                        </span>
+                      <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-primary">
+                        <span>Open Practice Workspace</span>
+                        <span className="transition-transform group-hover:translate-x-1">→</span>
                       </div>
-                    </div>
-
-                    <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-primary">
-                      <span>Open Practice Workspace</span>
-                      <span className="transition-transform group-hover:translate-x-1">→</span>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  </SpotlightCard>
+                </div>
+              );
+            })}
             </div>
           </div>
         </section>
